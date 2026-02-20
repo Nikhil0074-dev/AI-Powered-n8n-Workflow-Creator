@@ -135,22 +135,22 @@ json
 ## Workflow Process
 
 
-1. User sends chat request
-       │
-       ▼
-2. AI analyzes prompt
-       │
-       ▼
-3. Required nodes identified
-       │
-       ▼
-4. JSON workflow generated
-       │
-       ▼
-5. Workflow deployed in n8n
-       │
-       ▼
-6. User receives workflow link
+         1. User sends chat request
+                │
+                ▼
+         2. AI analyzes prompt
+                │
+                ▼
+         3. Required nodes identified
+                │
+                ▼
+         4. JSON workflow generated
+                │
+                ▼
+         5. Workflow deployed in n8n
+                │
+                ▼
+         6. User receives workflow link
 
 
 ## API Reference
@@ -176,4 +176,5 @@ json
   "workflowUrl": "https://n8n-instance.com/workflow/workflow-789",
   "message": "Workflow created successfully!"
 }
+
 
