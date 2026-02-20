@@ -15,28 +15,28 @@ The AI-Powered n8n Workflow Creator (also known as n8n Developer Agent) transfor
 - **Workflow Sharing**: Provides shareable workflow URLs
 
 ## System Architecture
+         
+         
+         ┌─────────────────┐
+         │   Trigger Layer │ ← Chat Trigger, Workflow Trigger
+         └────────┬────────┘
+                  ▼
+         ┌─────────────────────┐
+         │  AI Processing Layer │ ← Prompt Analysis, Logic Generation
+         └────────┬────────────┘
+                  ▼
+         ┌─────────────────────┐
+         │ Documentation Layer │ ← Google Drive Retrieval
+         └────────┬────────────┘
+                  ▼
+         ┌─────────────────────────┐
+         │ Workflow Management Layer │ ← JSON Validation, Deployment
+         └────────┬────────────────┘
+                  ▼
+         ┌─────────────────┐
+         │  Memory Layer   │ ← Context Storage, Sticky Notes
+         └─────────────────┘
 
-
-┌─────────────────┐
-│   Trigger Layer │ ← Chat Trigger, Workflow Trigger
-└────────┬────────┘
-         ▼
-┌─────────────────────┐
-│  AI Processing Layer │ ← Prompt Analysis, Logic Generation
-└────────┬────────────┘
-         ▼
-┌─────────────────────┐
-│ Documentation Layer │ ← Google Drive Retrieval
-└────────┬────────────┘
-         ▼
-┌─────────────────────────┐
-│ Workflow Management Layer │ ← JSON Validation, Deployment
-└────────┬────────────────┘
-         ▼
-┌─────────────────┐
-│  Memory Layer   │ ← Context Storage, Sticky Notes
-└─────────────────┘
-```
 
 ## Tech Stack
 
@@ -176,5 +176,6 @@ json
   "workflowUrl": "https://n8n-instance.com/workflow/workflow-789",
   "message": "Workflow created successfully!"
 }
+
 
 
