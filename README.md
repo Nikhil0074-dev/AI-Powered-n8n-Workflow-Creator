@@ -92,23 +92,23 @@ Send a Slack message when a webhook is triggered with customer data.
 
 ## Project Structure
 
-
-n8n-ai-workflow-creator/
-├── README.md
-├── workflows/
-│   ├── main-workflow.json          # Main AI Workflow Creator
-│   ├── sub-workflows/
-│   │   ├── prompt-analyzer.json    # Analyzes user prompts
-│   │   ├── workflow-generator.json  # Creates n8n JSON
-│   │   ├── workflow-deployer.json  # Deploys to n8n
-│   │   └── memory-manager.json     # Handles context
-│   └── templates/                  # Example workflow templates
-├── docs/
-│   ├── SETUP.md                    # Setup instructions
-│   ├── API.md                      # API documentation
-│   └── TROUBLESHOOTING.md          # Common issues
-└── config/
-    └── credentials.json.example     # Example credentials
+         
+         n8n-ai-workflow-creator/
+         ├── README.md
+         ├── workflows/
+         │   ├── main-workflow.json          # Main AI Workflow Creator
+         │   ├── sub-workflows/
+         │   │   ├── prompt-analyzer.json    # Analyzes user prompts
+         │   │   ├── workflow-generator.json  # Creates n8n JSON
+         │   │   ├── workflow-deployer.json  # Deploys to n8n
+         │   │   └── memory-manager.json     # Handles context
+         │   └── templates/                  # Example workflow templates
+         ├── docs/
+         │   ├── SETUP.md                    # Setup instructions
+         │   ├── API.md                      # API documentation
+         │   └── TROUBLESHOOTING.md          # Common issues
+         └── config/
+             └── credentials.json.example     # Example credentials
 
 
 ## Configuration
@@ -176,6 +176,7 @@ json
   "workflowUrl": "https://n8n-instance.com/workflow/workflow-789",
   "message": "Workflow created successfully!"
 }
+
 
 
 
