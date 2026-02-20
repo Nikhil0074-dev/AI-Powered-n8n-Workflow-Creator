@@ -1,0 +1,52 @@
+{
+  "name": "Email on Schedule",
+  "description": "Sends an email on a scheduled basis",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "toEmail": "recipient@example.com",
+        "subject": "Scheduled Report",
+        "body": "This is your scheduled email report.",
+        "options": {}
+      },
+      "id": "email-node",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1.2,
+      "position": [450, 300],
+      "credentials": {
+        "smtp": "smtp-credentials"
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

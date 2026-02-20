@@ -1,0 +1,258 @@
+{
+  "name": "AI-Powered n8n Workflow Creator",
+  "nodes": [
+    {
+      "parameters": {
+        "rules": {
+          "rules": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "type": "regex"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message }}",
+                    "operator": {
+                      "type": "contains",
+                      "value": "workflow"
+                    }
+                  }
+                ],
+                "combinator": "or"
+              },
+              "output": "={{ $json.response }}"
+            }
+          ]
+        },
+        "fallbackOutput": "={{ $json.response }}"
+      },
+      "id": "chat-router",
+      "name": "Route Chat Message",
+      "type": "n8n-nodes-base.router",
+      "typeVersion": 2,
+      "position": [500, 300],
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "prompt": "You are an n8n workflow expert. Analyze the user's request and extract:\n1. Trigger type needed (webhook, schedule, email, google sheets, slack, etc.)\n2. Actions/nodes required\n3. Any specific configurations mentioned\n\nUser request: {{ $json.message }}\n\nRespond with JSON containing: trigger, nodes (array), and description.",
+        "options": {
+          "model": "claude-opus-4-20250514",
+          "maxTokens": 1000
+        }
+      },
+      "id": "prompt-analyzer",
+      "name": "Analyze Prompt",
+      "type": "anthropic.messages",
+      "typeVersion": 1,
+      "position": [700, 200],
+      "credentials": {
+        "anthropicApi": "anthropic-api"
+      },
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "prompt": "You are an n8n workflow JSON generator. Create a valid n8n workflow JSON based on this analysis:\n\n{{ $json.ai_response }}\n\nGenerate a complete n8n workflow JSON with:\n- Proper node structure\n- Correct connections\n- Required parameters for each node\n\nReturn ONLY valid JSON, no other text.",
+        "options": {
+          "model": "claude-opus-4-20250514",
+          "maxTokens": 2000
+        }
+      },
+      "id": "workflow-generator",
+      "name": "Generate Workflow JSON",
+      "type": "anthropic.messages",
+      "typeVersion": 1,
+      "position": [900, 200],
+      "credentials": {
+        "anthropicApi": "anthropic-api"
+      },
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.N8N_API_URL }}/api/v1/workflows",
+        "authentication": "genericBearer",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.workflow_name }}"
+            },
+            {
+              "name": "nodes",
+              "value": "={{ $json.nodes }}"
+            },
+            {
+              "name": "connections",
+              "value": "={{ $json.connections }}"
+            },
+            {
+              "name": "active",
+              "value": true
+            }
+          ]
+        },
+        "specifyBody": "json"
+      },
+      "id": "workflow-deployer",
+      "name": "Deploy Workflow",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [1100, 200],
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "userId",
+              "value": "={{ $json.userId }}"
+            },
+            {
+              "name": "sessionId",
+              "value": "={{ $json.sessionId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "store-context",
+      "name": "Store Context",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [300, 300],
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "memoryName": "n8n-memory"
+      },
+      "id": "memory",
+      "name": "Memory",
+      "type": "n8n-nodes-base.memory",
+      "typeVersion": 1.3,
+      "position": [300, 450],
+      "credentials": {
+        "memoryRedis": "redis-memory"
+      },
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "text": "I've created your workflow! 🎉\n\n**Workflow Name:** {{ $json.data.name }}\n**Workflow ID:** {{ $json.data.id }}\n**URL:** {{ $env.N8N_API_URL }}/workflow/{{ $json.data.id }}\n\nYou can now activate and configure it in your n8n instance.",
+        "additionalFields": {}
+      },
+      "id": "success-response",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [1300, 200],
+      "notesInFlow": false
+    },
+    {
+      "parameters": {
+        "text": "I apologize, but I couldn't create the workflow. 😕\n\n**Error:** {{ $json.error.message }}\n\nPlease try rephrasing your request or check the system configuration.",
+        "additionalFields": {}
+      },
+      "id": "error-response",
+      "name": "Error Response",
+      "type": "n8n-nodes-base.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [1300, 400],
+      "notesInFlow": false
+    }
+  ],
+  "connections": {
+    "Route Chat Message": {
+      "main": [
+        [
+          {
+            "node": "Store Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Context": {
+      "main": [
+        [
+          {
+            "node": "Analyze Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Prompt": {
+      "main": [
+        [
+          {
+            "node": "Generate Workflow JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Workflow JSON": {
+      "main": [
+        [
+          {
+            "node": "Deploy Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deploy Workflow": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ],
+      "error": [
+        [
+          {
+            "node": "Error Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["ai", "automation", "workflow-creator"],
+  "triggerCount": 1,
+  "updatedAt": "2025-01-13T00:00:00.000Z",
+  "versionId": "1"
+}

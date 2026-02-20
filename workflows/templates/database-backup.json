@@ -1,0 +1,101 @@
+{
+  "name": "Database Backup to Cloud",
+  "description": "Scheduled database backup to cloud storage",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM users WHERE created_at > NOW() - INTERVAL 1 DAY",
+        "options": {}
+      },
+      "id": "mysql-node",
+      "name": "Get New Users",
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 1.1,
+      "position": [450, 300],
+      "credentials": {
+        "mySql": "mysql-credentials"
+      }
+    },
+    {
+      "parameters": {
+        "mode": "jsonToFile",
+        "fileName": "/backup/users-{{ $now.format('YYYY-MM-DD') }}.json",
+        "options": {}
+      },
+      "id": "write-file",
+      "name": "Save to File",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1.2,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "remotePath": "/backups/users-{{ $now.format('YYYY-MM-DD') }}.json",
+        "fileName": "={{ $binary.data }}",
+        "options": {}
+      },
+      "id": "gdrive-upload",
+      "name": "Upload to Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 2,
+      "position": [850, 300],
+      "credentials": {
+        "googleDriveOAuth2": "google-drive"
+      }
+    }
+  ],
+  "connections": {
+    "Daily Schedule": {
+      "main": [
+        [
+          {
+            "node": "Get New Users",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get New Users": {
+      "main": [
+        [
+          {
+            "node": "Save to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to File": {
+      "main": [
+        [
+          {
+            "node": "Upload to Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
