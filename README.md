@@ -21,17 +21,17 @@ The AI-Powered n8n Workflow Creator (also known as n8n Developer Agent) transfor
          │   Trigger Layer │ ← Chat Trigger, Workflow Trigger
          └────────┬────────┘
                   ▼
-         ┌─────────────────────┐
+         ┌──────────────────────┐
          │  AI Processing Layer │ ← Prompt Analysis, Logic Generation
-         └────────┬────────────┘
+         └────────┬─────────────┘
                   ▼
          ┌─────────────────────┐
          │ Documentation Layer │ ← Google Drive Retrieval
          └────────┬────────────┘
                   ▼
-         ┌─────────────────────────┐
+         ┌───────────────────────────┐
          │ Workflow Management Layer │ ← JSON Validation, Deployment
-         └────────┬────────────────┘
+         └────────┬──────────────────┘
                   ▼
          ┌─────────────────┐
          │  Memory Layer   │ ← Context Storage, Sticky Notes
